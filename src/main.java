@@ -70,16 +70,11 @@ class main {
 
 	    root_a.fieldNames();
 
-		//group.jsonを書き出し
+		//団体情報を書き出し
 
 		group();			//企画団体名
 		group2("kana");	//かな
-		//group1();
 
-
-		//account.jsonを書き出し
-
-		//pw.println("以下、責任者・副責任者情報");
 
 		//アカウント情報を書き出し
 
@@ -87,7 +82,6 @@ class main {
 		account("member");//副責を書き出し
 
 		//申請項目を書き出し
-		//pw.println("以下、申請情報");
 
 		event();
 
@@ -95,6 +89,7 @@ class main {
 
 
 		new Q_code(csv_location + "/temp.csv",csv_location + "/data.csv");
+		//行と列を転置(転置しないとフィルターがうまくかからない)
 	}
 
 
