@@ -99,17 +99,17 @@ public class Q_code {
 	}
 
 	private void Row_deform() {
-		list_file.add(2, list_file.get(26 - 6));
-		list_file.remove(27 - 6);
+		list_file.add(2, list_file.get(26/* - 6*/));
+		list_file.remove(27/* - 6*/);
 
-		list_file.add(3, list_file.get(27 - 6));
-		list_file.remove(28 - 6);
+		list_file.add(3, list_file.get(27/* - 6*/));
+		list_file.remove(28/* - 6*/);
 
-		list_file.add(4, list_file.get(40 - 6));
-		list_file.remove(41 - 6);
+		list_file.add(4, list_file.get(40/* - 6*/));
+		list_file.remove(41/* - 6*/);
 
-		list_file.add(0, list_file.get(77 - 6));
-		list_file.remove(78- 6);
+		list_file.add(0, list_file.get(77/* - */));
+		list_file.remove(78/*- 6*/);
 
 
 	}

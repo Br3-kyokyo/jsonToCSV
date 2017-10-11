@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -15,7 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-class main {
+public class main {
 
 	private static PrintWriter pw;
 	private static Iterator<String> fieldNames_g;
@@ -30,9 +31,9 @@ class main {
 
 	public static void main(String[] args) throws JsonProcessingException, IOException{
 
-		String csv_location = null;
-		String jsn_location = null;
-
+		String csv_location = ".";
+		String jsn_location = ".";
+/*
 		try{
 			csv_location = args[0];
 			jsn_location = args[1];
@@ -45,7 +46,7 @@ class main {
 			System.exit(0);
 
 		}
-
+*/
 
 		System.out.println("Start");
 
@@ -70,11 +71,16 @@ class main {
 
 	    root_a.fieldNames();
 
-		//団体情報を書き出し
+		//group.jsonを書き出し
 
 		group();			//企画団体名
 		group2("kana");	//かな
+		//group1();
 
+
+		//account.jsonを書き出し
+
+		//pw.println("以下、責任者・副責任者情報");
 
 		//アカウント情報を書き出し
 
@@ -82,6 +88,7 @@ class main {
 		account("member");//副責を書き出し
 
 		//申請項目を書き出し
+		//pw.println("以下、申請情報");
 
 		event();
 
@@ -89,7 +96,6 @@ class main {
 
 
 		new Q_code(csv_location + "/temp.csv",csv_location + "/data.csv");
-		//行と列を転置(転置しないとフィルターがうまくかからない)
 	}
 
 
@@ -148,7 +154,6 @@ private static void group1() throws IOException {
 
 
 
-
 			while(fieldNames_g.hasNext()){
 
 				group_id = fieldNames_g.next();	//団体IDを走査
@@ -156,26 +161,66 @@ private static void group1() throws IOException {
 
 				while(id_row.get(group_id) > hoge1){pw.print(","); hoge1++;}	//列をそろえる
 
-				if(type.equals("\"select\"") || type.equals("\"multiple\"")){
+				if(type.equals("\"select\"")){
 
 
-						try{
-							String ans_id = root_e.get("form").get(item).get("ans").get(group_id).asText();
+					try{
+						String ans_id = root_e.get("form").get(item).get("ans").get(group_id).asText();
 
-							String temp = root_e.get("form").get(item).get("select").get(ans_id).toString();
-							temp = remove_comma(temp);
+						String ans_str = root_e.get("form").get(item).get("select").get(ans_id).toString();
+						ans_str = replace_str(ans_str,",","、");
 
-							pw.print(temp+",");	//回答内容を出力
-						}catch(NullPointerException e){
-							pw.print(",");
+						pw.print(ans_str+",");	//回答内容を出力
+					}catch(NullPointerException e){
+						pw.print(",");
+					}
+
+				}if(type.equals("\"multiple\"")){
+
+
+					try{
+						String ans_id = root_e.get("form").get(item).get("ans").get(group_id).asText();
+
+
+						String[] ans_str_array = ans_id.split("\\/");
+
+						Iterator<String> itr = Arrays.asList(ans_str_array).iterator();
+
+						while(itr.hasNext()){
+
+							String temp = itr.next();
+
+							//System.out.println(temp);
+
+							String ans_str = root_e.get("form").get(item).get("select").get(temp).toString();
+							ans_str = replace_str(ans_str,",","、");
+
+							//System.out.println(ans_str);
+
+							pw.print(ans_str + " ");	//回答内容を出力
 						}
+
+						pw.print(",");
+
+					}catch(NullPointerException e){
+						pw.print(",");
+					}
+
+
+
 
 				}if(type.equals("\"text\"") || type.equals("\"textarea\"")){
 
 						try{
-							String temp = root_e.get("form").get(item).get("ans").get(group_id).toString();
-							temp = remove_comma(temp);
-							pw.print(temp+",");	//回答内容を出力
+							String ans_str = root_e.get("form").get(item).get("ans").get(group_id).toString();
+							ans_str = replace_str(ans_str,",","、");
+
+
+							//ans_str = ans_str.replaceAll(System.lineSeparator(), " ");
+
+
+							System.out.print(ans_str);
+							pw.print(ans_str+",");	//回答内容を出力
 						}catch(NullPointerException e){
 							pw.print(",");
 						}
@@ -195,7 +240,7 @@ private static void group1() throws IOException {
 							try{
 								String target = root_e.get("form").get(item).get("select").get(odr_ans).toString();//物品の名前を出力
 								String temp = root_e.get("form").get(item).get("ans").get(group_id).get(odr_ans).toString();	//物品の数量を出力
-								temp = remove_comma(temp);
+								temp = replace_str(temp,",","、");
 								pw.print(target+":"+temp+" ");	//回答内容を出力
 							}catch(NullPointerException e){}
 						}
@@ -219,15 +264,17 @@ private static void group1() throws IOException {
 
 
 
+
+
 	private static void account(String string) throws IOException {
 
 		String syurui = string;
 
 	    account_sub("name",syurui);
 	    account_sub("kana",syurui);
-	    //account_sub("email",syurui);
-	    //account_sub("phone",syurui);
-	    //account_sub("id",syurui);
+	    account_sub("email",syurui);
+	    account_sub("phone",syurui);
+	    account_sub("id",syurui);
 	    account_sub("college",syurui);
 
 	}
@@ -266,7 +313,7 @@ private static void group1() throws IOException {
 					try{		//色々出力
 
 						String temp = root_a.get(root_g.get(group_id).get(syurui).toString()).get(string).toString();
-						temp = remove_comma(temp);
+						temp = replace_str(temp,",","、");
 						pw.print(temp+",");
 
 					}catch(NullPointerException e){
@@ -289,7 +336,7 @@ private static void group1() throws IOException {
 							try{		//色々出力
 
 								String temp = root_a.get(root_g.get(group_id).get(syurui).get(i).toString()).get(string).toString();
-								temp = remove_comma(temp);
+								temp = replace_str(temp,",","、");
 								pw.print(temp+" ");
 
 							}catch(NullPointerException e){}
@@ -349,7 +396,7 @@ private static void group1() throws IOException {
 
 			try{
 				String temp = root_g.get(group_id).get(string).toString();
-				temp = remove_comma(temp);
+				temp = replace_str(temp,",","、");
 				pw.print(temp+",");	//団体名を出力
 			}catch(NullPointerException e){}
 
@@ -378,7 +425,7 @@ private static void group1() throws IOException {
 			}
 
 			String temp1 =root_g.get(temp).get("name").toString();
-			temp1=remove_comma(temp1);
+			temp1=replace_str(temp1,",","、");
 
 			pw.print(temp1+",");	//団体名を出力
 
@@ -391,15 +438,14 @@ private static void group1() throws IOException {
 
 
 
-	private static String remove_comma(String temp1) {
+	private static String replace_str(String target_str, String before_splitting_char,String after_splitting_char) {
 
-		Pattern p = Pattern.compile(",");
-		Matcher m = p.matcher(temp1);
-		String result = m.replaceAll("、");
+		Pattern p = Pattern.compile(before_splitting_char);
+		Matcher m = p.matcher(target_str);
+		String result = m.replaceAll(after_splitting_char);
 
 		return result;
 	}
-
 
 }
 
