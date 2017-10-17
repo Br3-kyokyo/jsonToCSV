@@ -169,6 +169,7 @@ private static void group1() throws IOException {
 
 						String ans_str = root_e.get("form").get(item).get("select").get(ans_id).toString();
 						ans_str = replace_str(ans_str,",","、");
+						ans_str = replace_str(ans_str,"&amp;","&");
 
 						pw.print(ans_str+",");	//回答内容を出力
 					}catch(NullPointerException e){
@@ -194,6 +195,7 @@ private static void group1() throws IOException {
 
 							String ans_str = root_e.get("form").get(item).get("select").get(temp).toString();
 							ans_str = replace_str(ans_str,",","、");
+							ans_str = replace_str(ans_str,"&amp;","&");
 
 							//System.out.println(ans_str);
 
@@ -214,7 +216,9 @@ private static void group1() throws IOException {
 						try{
 							String ans_str = root_e.get("form").get(item).get("ans").get(group_id).toString();
 							ans_str = replace_str(ans_str,",","、");
-
+							ans_str = replace_str(ans_str,"&amp;","&");
+							ans_str = replace_str(ans_str,"\r\n","改行");
+							System.out.println(ans_str);
 
 							//ans_str = ans_str.replaceAll(System.lineSeparator(), " ");
 
@@ -239,9 +243,10 @@ private static void group1() throws IOException {
 
 							try{
 								String target = root_e.get("form").get(item).get("select").get(odr_ans).toString();//物品の名前を出力
-								String temp = root_e.get("form").get(item).get("ans").get(group_id).get(odr_ans).toString();	//物品の数量を出力
-								temp = replace_str(temp,",","、");
-								pw.print(target+":"+temp+" ");	//回答内容を出力
+								String ans_str = root_e.get("form").get(item).get("ans").get(group_id).get(odr_ans).toString();	//物品の数量を出力
+								ans_str = replace_str(ans_str,",","、");
+								ans_str = replace_str(ans_str,"&amp;","&");
+								pw.print(target+":"+ans_str+" ");	//回答内容を出力
 							}catch(NullPointerException e){}
 						}
 
